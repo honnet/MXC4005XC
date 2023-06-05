@@ -18,17 +18,22 @@ void setup() {
 
 
 void loop() {
-  float data[4] = {0};  // unit: g
+  float data[4] = {0};   // units g (x,y,z) and celcius
+  char buffer[27] = {0}; // example: -1.00, -1.00, -1.00, -100.0
+  uint8_t index = 0;
 
   MXC4005XC_GetData(data);
 
   for (uint8_t i = 0; i < 3; i++) {
-    Serial.print( data[i] );
-    Serial.print('\t');
+   // Serial.print() uses double by default, which takes a lot of space.
+   // sprintf (with %f) avoids it:
+    index += sprintf( &buffer[index], "%.2f\t", data[i] );
   }
 
-//  Serial.print( data[3] ); // temperature in Celcius
-  Serial.print('\n');
+//  index += sprintf( &buffer[index], "%.1f\t", data[3] ); // temperature
+
+  buffer[index-1] = '\n'; // overwrite last tab
+  Serial.print(buffer);
 
   delay(10);
 }
